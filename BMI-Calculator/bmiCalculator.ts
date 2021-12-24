@@ -5,11 +5,11 @@ interface BmiInputs {
 // parses arguments from the CLI
 const validateCliInputsForBmiCalculator = (args: Array<string>): BmiInputs => {
   if (args.length < 4)
-    throw new Error("Not enough arguments to perform this operation!");
+    throw new Error('Not enough arguments to perform this operation!');
   if (args.length > 4)
-    throw new Error("Too many arguments, operation not allowed!");
+    throw new Error('Too many arguments, operation not allowed!');
   if (isNaN(Number(args[2])) || isNaN(Number(args[3])))
-    throw new Error("Only numbers are allowed for this operation!");
+    throw new Error('Only numbers are allowed for this operation!');
 
   return {
     height: Number(args[2]),
@@ -20,22 +20,22 @@ const validateCliInputsForBmiCalculator = (args: Array<string>): BmiInputs => {
 const calculateBmi = (height: number, weight: number): string => {
   if (height <= 0 || weight <= 0)
     throw new Error(
-      "Height and weight must be positive numbers greater than zero"
+      'Height and weight must be positive numbers greater than zero'
     );
   const heightInMeters = height / 100;
   const bmi = weight / (heightInMeters * heightInMeters);
 
   switch (true) {
     case bmi < 18.5:
-      return "Underweight (More weight needed for a healthy state)";
+      return 'Underweight (More weight needed for a healthy state)';
     case bmi >= 18.5 && bmi <= 24.9:
-      return "Normal (Healthy weight)";
+      return 'Normal (Healthy weight)';
     case bmi >= 25 && bmi <= 29.9:
-      return "Overweight (Not healthy, watch your diet!)";
+      return 'Overweight (Not healthy, watch your diet!)';
     case bmi >= 30:
-      return "Obese (Not healthy, incorporate exercise in your daily activities, eat healthy!)";
+      return 'Obese (Not healthy, incorporate exercise in your daily activities, eat healthy!)';
     default:
-      throw new Error("Invalid parameters, operation not allowed!");
+      throw new Error('Invalid parameters, operation not allowed!');
   }
 };
 
@@ -44,5 +44,5 @@ try {
   console.log(calculateBmi(height, weight));
   //console.log(calculateBmi(180, 70));
 } catch (e: unknown) {
-  if (e instanceof Error) console.log("BMI Error:", e.message);
+  if (e instanceof Error) console.log('BMI Error:', e.message);
 }

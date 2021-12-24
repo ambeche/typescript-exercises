@@ -20,10 +20,10 @@ interface ExerciseInputs {
 
 const validateCliInputs = (args: Array<string>): ExerciseInputs => {
   if (args.length < 4)
-    throw new Error("Not enough arguments to perform this operation!");
+    throw new Error('Not enough arguments to perform this operation!');
 
   const setIsNaNError = () => {
-    throw new Error("Invalid input, only numbers are allowed!");
+    throw new Error('Invalid input, only numbers are allowed!');
   };
 
   if (isNaN(Number(args[2]))) setIsNaNError();
@@ -33,7 +33,7 @@ const validateCliInputs = (args: Array<string>): ExerciseInputs => {
     if (isNaN(Number(arg))) setIsNaNError();
     return Number(arg);
   });
-  console.log("dailyhours", dailyHours, target);
+  console.log('dailyhours', dailyHours, target);
 
   return { target, dailyHours };
 };
@@ -45,7 +45,7 @@ const calculateExercises = (
   const totalHours = exercises.reduce((acc, currentValue): number => {
     if (currentValue < 0 || isNaN(currentValue))
       throw new Error(
-        "Exercise hours must be numbers, nagative values not allowed!"
+        'Exercise hours must be numbers, nagative values not allowed!'
       );
     return acc + currentValue;
   }, 0);
@@ -56,7 +56,7 @@ const calculateExercises = (
   ).length;
 
   if (periodLength === 0)
-    throw new Error("Operation not allowed, zero hours provided!");
+    throw new Error('Operation not allowed, zero hours provided!');
   const average = totalHours / periodLength;
 
   // returns a value between 0 and 1; 1 => average hours equals original target (success, target met)
@@ -69,13 +69,15 @@ const calculateExercises = (
           rating: 3,
           ratingDescription:
             successRatio === 1
-              ? "Excellent, keep up the good job!"
+              ? 'Excellent, keep up the good job!'
               : "Fantastic! You've out-performed yourself, great job!",
         };
       case successRatio >= 0.5 && successRatio < 1:
-        return { rating: 2, ratingDescription: "Good, you could be better!" };
+        return { rating: 2, ratingDescription: 'Good, you could be better!' };
       case successRatio < 0.5:
-        return { rating: 1, ratingDescription: "Bad, courage you can do it!" };
+        return { rating: 1, ratingDescription: 'Bad, courage you can do it!' };
+      default:
+        throw new Error('Not Applicable!');
     }
   };
 
@@ -97,5 +99,5 @@ try {
   console.log(calculateExercises(target, dailyHours));
   //console.log(calculateExercises(2, [3, 0, 2, 5, 0, 3, 1]));
 } catch (e: unknown) {
-  if (e instanceof Error) console.log("Error: ", e.message);
+  if (e instanceof Error) console.log('Error: ', e.message);
 }
