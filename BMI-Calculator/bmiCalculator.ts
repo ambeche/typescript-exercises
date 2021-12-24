@@ -1,3 +1,22 @@
+interface BmiInputs {
+  height: number;
+  weight: number;
+}
+// parses arguments from the CLI
+const validateCliInputsForBmiCalculator = (args: Array<string>): BmiInputs => {
+  if (args.length < 4)
+    throw new Error("Not enough arguments to perform this operation!");
+  if (args.length > 4)
+    throw new Error("Too many arguments, operation not allowed!");
+  if (isNaN(Number(args[2])) || isNaN(Number(args[3])))
+    throw new Error("Only numbers are allowed for this operation!");
+
+  return {
+    height: Number(args[2]),
+    weight: Number(args[3]),
+  };
+};
+
 const calculateBmi = (height: number, weight: number): string => {
   if (height <= 0 || weight <= 0)
     throw new Error(
@@ -21,7 +40,9 @@ const calculateBmi = (height: number, weight: number): string => {
 };
 
 try {
-  console.log(calculateBmi(180, 70));
+  const { height, weight } = validateCliInputsForBmiCalculator(process.argv);
+  console.log(calculateBmi(height, weight));
+  //console.log(calculateBmi(180, 70));
 } catch (e: unknown) {
   if (e instanceof Error) console.log("BMI Error:", e.message);
 }

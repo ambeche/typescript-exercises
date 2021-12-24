@@ -13,6 +13,31 @@ interface Rating {
   ratingDescription: string;
 }
 
+interface ExerciseInputs {
+  target: number;
+  dailyHours: Array<number>;
+}
+
+const validateCliInputs = (args: Array<string>): ExerciseInputs => {
+  if (args.length < 4)
+    throw new Error("Not enough arguments to perform this operation!");
+
+  const setIsNaNError = () => {
+    throw new Error("Invalid input, only numbers are allowed!");
+  };
+
+  if (isNaN(Number(args[2]))) setIsNaNError();
+  const target = Number(args[2]);
+
+  const dailyHours = args.slice(3).map((arg) => {
+    if (isNaN(Number(arg))) setIsNaNError();
+    return Number(arg);
+  });
+  console.log("dailyhours", dailyHours, target);
+
+  return { target, dailyHours };
+};
+
 const calculateExercises = (
   target: number,
   exercises: Array<number>
@@ -68,7 +93,9 @@ const calculateExercises = (
 };
 
 try {
-  console.log(calculateExercises(2, [3, 0, 2, 5, 0, 3, 1]));
+  const { target, dailyHours } = validateCliInputs(process.argv);
+  console.log(calculateExercises(target, dailyHours));
+  //console.log(calculateExercises(2, [3, 0, 2, 5, 0, 3, 1]));
 } catch (e: unknown) {
-  if (e instanceof Error) console.log("ExerciseCalculationError: ", e.message);
+  if (e instanceof Error) console.log("Error: ", e.message);
 }
