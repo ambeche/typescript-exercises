@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import express, { ErrorRequestHandler } from 'express';
 import * as bmiCalculator from './bmiCalculator';
 import * as exerciseCalculator from './exerciseCalculator';
