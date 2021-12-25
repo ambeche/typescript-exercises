@@ -2,14 +2,25 @@ interface BmiInputs {
   height: number;
   weight: number;
 }
+
+// error name will be used by the express ValidationErrorHandle middleware
+const throwValidationError = (message: string, name = 'Error'): void => {
+  const ValidationError = new Error();
+  ValidationError.name = name;
+  ValidationError.message = message;
+  throw ValidationError;
+};
+
 // parses arguments from the CLI
 const validateCliInputsForBmiCalculator = (args: Array<string>): BmiInputs => {
   if (args.length < 4)
-    throw new Error('Not enough arguments to perform this operation!');
+    throwValidationError('Not enough arguments to perform this operation!');
+
   if (args.length > 4)
-    throw new Error('Too many arguments, operation not allowed!');
+    throwValidationError('Too many arguments, operation not allowed!');
+
   if (isNaN(Number(args[2])) || isNaN(Number(args[3])))
-    throw new Error('Only numbers are allowed for this operation!');
+    throwValidationError('Only numbers are allowed for this operation!');
 
   return {
     height: Number(args[2]),
@@ -17,22 +28,37 @@ const validateCliInputsForBmiCalculator = (args: Array<string>): BmiInputs => {
   };
 };
 
+const validateBmiQuery = (height: string, weight: string): BmiInputs => {
+  if (!height || !weight)
+    throwValidationError('parameters missing', 'BmiValidationError');
+
+  if (isNaN(Number(height)) || isNaN(Number(weight)))
+    throwValidationError('malformatted parameters', 'BmiValidationError');
+
+  return {
+    height: Number(height),
+    weight: Number(weight),
+  };
+};
+
 const calculateBmi = (height: number, weight: number): string => {
   if (height <= 0 || weight <= 0)
-    throw new Error(
-      'Height and weight must be positive numbers greater than zero'
+    throwValidationError(
+      'Height and weight must be positive numbers greater than zero',
+      'BmiValidationError'
     );
   const heightInMeters = height / 100;
   const bmi = weight / (heightInMeters * heightInMeters);
+  const bmiToOneDecimal = Number(bmi.toFixed(1));
 
   switch (true) {
-    case bmi < 18.5:
+    case bmiToOneDecimal < 18.5:
       return 'Underweight (More weight needed for a healthy state)';
-    case bmi >= 18.5 && bmi <= 24.9:
+    case bmiToOneDecimal >= 18.5 && bmiToOneDecimal <= 24.9:
       return 'Normal (Healthy weight)';
-    case bmi >= 25 && bmi <= 29.9:
+    case bmiToOneDecimal >= 25 && bmiToOneDecimal <= 29.9:
       return 'Overweight (Not healthy, watch your diet!)';
-    case bmi >= 30:
+    case bmiToOneDecimal >= 30:
       return 'Obese (Not healthy, incorporate exercise in your daily activities, eat healthy!)';
     default:
       throw new Error('Invalid parameters, operation not allowed!');
@@ -46,3 +72,5 @@ try {
 } catch (e: unknown) {
   if (e instanceof Error) console.log('BMI Error:', e.message);
 }
+
+export { calculateBmi, validateBmiQuery };
