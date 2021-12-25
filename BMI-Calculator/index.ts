@@ -1,4 +1,4 @@
-import express, {ErrorRequestHandler} from 'express';
+import express, { ErrorRequestHandler } from 'express';
 import * as bmiCalculator from './bmiCalculator';
 
 const app = express();
@@ -9,7 +9,9 @@ app.get('/hello', (_req, res) => {
 
 app.get('/bmi', (req, res, next) => {
   try {
-    const bmiParams = req.query as any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const bmiParams: any = req.query;
+    
     const { height, weight } = bmiCalculator.validateBmiQuery(
       bmiParams.height,
       bmiParams.weight
@@ -25,11 +27,15 @@ app.get('/bmi', (req, res, next) => {
   }
 });
 
-const validationErrorHandler: ErrorRequestHandler =
- (error, _req, res, next) => {
+const validationErrorHandler: ErrorRequestHandler = (
+  error,
+  _req,
+  res,
+  next
+) => {
   if (error.name === 'BmiValidationError') {
     res.status(400).json({ error: error.message });
-    return
+    return;
   }
   next(error);
 };
