@@ -1,3 +1,5 @@
+import { throwValidationError } from './utils';
+
 interface ExerciseStatistics {
   periodLength: number;
   trainingDays: number;
@@ -18,24 +20,48 @@ interface ExerciseInputs {
   dailyHours: Array<number>;
 }
 
+const ERROR_NAME = 'CalculateExerciseValidationError';
+
+const verifyIsNotNaN = (
+  originalTarget: string,
+  exercises: Array<string>,
+  message = 'Invalid input, only numbers are allowed!',
+  name = 'Error'
+): ExerciseInputs => {
+  if (isNaN(Number(originalTarget))) throwValidationError(message, name);
+  const target = Number(originalTarget);
+
+  const dailyHours = exercises.map((hours) => {
+    if (isNaN(Number(hours))) throwValidationError(message, name);
+    return Number(hours);
+  });
+
+  return { target, dailyHours };
+};
+
+const validateExerciseRequest = (
+  // validates all requests from the /exercise endpoint
+  originalTarget: string,
+  exercises: Array<string>
+): ExerciseInputs => {
+  if ((!originalTarget && Number(originalTarget) !== 0) || !exercises?.length)
+    throwValidationError('parameters missing', ERROR_NAME);
+
+  return verifyIsNotNaN(
+    originalTarget,
+    exercises,
+    'malformatted parameters',
+    ERROR_NAME
+  );
+};
+
 const validateCliInputs = (args: Array<string>): ExerciseInputs => {
   if (args.length < 4)
     throw new Error('Not enough arguments to perform this operation!');
+  const exercises = args.slice(3);
+  const target = args[2];
 
-  const setIsNaNError = () => {
-    throw new Error('Invalid input, only numbers are allowed!');
-  };
-
-  if (isNaN(Number(args[2]))) setIsNaNError();
-  const target = Number(args[2]);
-
-  const dailyHours = args.slice(3).map((arg) => {
-    if (isNaN(Number(arg))) setIsNaNError();
-    return Number(arg);
-  });
-  console.log('dailyhours', dailyHours, target);
-
-  return { target, dailyHours };
+  return verifyIsNotNaN(target, exercises);
 };
 
 const calculateExercises = (
@@ -44,7 +70,7 @@ const calculateExercises = (
 ): ExerciseStatistics => {
   const totalHours = exercises.reduce((acc, currentValue): number => {
     if (currentValue < 0 || isNaN(currentValue))
-      throw new Error(
+      throwValidationError(
         'Exercise hours must be numbers, nagative values not allowed!'
       );
     return acc + currentValue;
@@ -56,11 +82,14 @@ const calculateExercises = (
   ).length;
 
   if (periodLength === 0)
-    throw new Error('Operation not allowed, zero hours provided!');
+    throwValidationError('Operation not allowed, zero hours provided!');
   const average = totalHours / periodLength;
 
   // returns a value between 0 and 1; 1 => average hours equals original target (success, target met)
+  if (target <= 0)
+    throwValidationError('Target value must be a number greater than zero', ERROR_NAME);
   const successRatio = average / target;
+  console.log('success', successRatio);
 
   const ratePerformance = (): Rating => {
     switch (true) {
@@ -75,7 +104,7 @@ const calculateExercises = (
       case successRatio >= 0.5 && successRatio < 1:
         return { rating: 2, ratingDescription: 'Good, you could be better!' };
       case successRatio < 0.5:
-        return { rating: 1, ratingDescription: 'Bad, courage you can do it!' };
+        return { rating: 1, ratingDescription: 'Bad, courage, you can do it!' };
       default:
         throw new Error('Not Applicable!');
     }
@@ -101,3 +130,5 @@ try {
 } catch (e: unknown) {
   if (e instanceof Error) console.log('Error: ', e.message);
 }
+
+export { validateExerciseRequest, calculateExercises };

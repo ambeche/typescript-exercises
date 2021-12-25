@@ -1,15 +1,9 @@
+import { throwValidationError } from './utils';
+
 interface BmiInputs {
-  height: number;
+  height: number;   
   weight: number;
 }
-
-// error name will be used by the express ValidationErrorHandle middleware
-const throwValidationError = (message: string, name = 'Error'): void => {
-  const ValidationError = new Error();
-  ValidationError.name = name;
-  ValidationError.message = message;
-  throw ValidationError;
-};
 
 // parses arguments from the CLI
 const validateCliInputsForBmiCalculator = (args: Array<string>): BmiInputs => {
