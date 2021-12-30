@@ -1,5 +1,6 @@
 import { patients } from '../../data/dataEntries';
-import { NonSensitivePatient } from './../types';
+import { Patient, NonSensitivePatient, PatientInput } from './../types';
+import { v4 as uuid4 } from 'uuid';
 
 // excludes sensitive data, ssn from patient record (type Patient) before returns (type NonSensitivePatient)
 const getPatients = (): NonSensitivePatient[] =>
@@ -11,4 +12,16 @@ const getPatients = (): NonSensitivePatient[] =>
     occupation,
   }));
 
-export default { getPatients };
+const addPatient = (patientInput: PatientInput): Patient => {
+  const id: string = uuid4();
+  const newPatient: Patient = {
+    id,
+    ...patientInput,
+  };
+
+  patients.push(newPatient);
+
+  return newPatient;
+};
+
+export default { getPatients, addPatient };
