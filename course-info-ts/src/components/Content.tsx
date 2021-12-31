@@ -1,32 +1,58 @@
 import React from 'react';
+import { CoursePart } from '../types';
+import { assertNever } from '../utils';
 
-interface CoursePart {
-  name: string;
-  exerciseCount: number;
-}
-
-const Part = ({
-  name,
-  exerciseCount,
-}: CoursePart) => (
-  <p>
-    {name} {exerciseCount}
-  </p>
-);
-
-const Content = ({ courseParts }: {courseParts: CoursePart[]}) => {
+const Part = (prop: CoursePart) => {
+  const part = () => {
+    switch (prop.type) {
+      case 'normal':
+        return (
+          <div>
+            <em>{prop.description}</em>
+          </div>
+        );
+      case 'groupProject':
+        return <div>project exercises {prop.groupProjectCount}</div>;
+      case 'submission':
+        return (
+          <div>
+            <em>{prop.description}</em>
+            <div>{prop.exerciseSubmissionLink}</div>
+          </div>
+        );
+      case 'special':
+        return (
+          <div>
+            <em>{prop.description}</em>
+            <div>
+              required skills: {prop.requirements.map((rqmt) => (
+                <span key={rqmt}>{rqmt} </span>
+              ))}
+            </div>
+          </div>
+        );
+      default:
+        return assertNever(prop);
+    }
+  };
   return (
     <div>
-      {
-        courseParts.map(part => {
-          const {name, exerciseCount} = part;
-          return (
-            <Part key={name} name={name} exerciseCount={exerciseCount} />
-          )
-        })
-      }
+      <h4>
+        {prop.name} {prop.exerciseCount}
+      </h4>
+      {part()}
     </div>
-  )
+  );
+};
+
+const Content = ({ courseParts }: { courseParts: CoursePart[] }) => {
+  return (
+    <div>
+      {courseParts.map((part) => (
+        <Part key={part.name} {...part} />
+      ))}
+    </div>
+  );
 };
 
 export default Content;
